@@ -1,0 +1,24 @@
+[0m21:39:46.675478 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x12a2c8440>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x12a7aa9f0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x12a7aa6f0>]}
+
+
+============================== 21:39:46.678938 | d8d4718b-5e4c-4e6c-875c-895025e87a7b ==============================
+[0m21:39:46.678938 [info ] [MainThread]: Running with dbt=1.8.4
+[0m21:39:46.679297 [debug] [MainThread]: running dbt with arguments {'printer_width': '80', 'indirect_selection': 'eager', 'write_json': 'True', 'log_cache_events': 'False', 'partial_parse': 'True', 'cache_selected_only': 'False', 'profiles_dir': '/Users/dougstrouth/.dbt', 'version_check': 'True', 'warn_error': 'None', 'log_path': 'logs', 'debug': 'False', 'fail_fast': 'False', 'use_colors': 'True', 'use_experimental_parser': 'False', 'empty': 'None', 'quiet': 'False', 'no_print': 'None', 'log_format': 'default', 'invocation_command': 'dbt init', 'introspect': 'True', 'static_parser': 'True', 'target_path': 'None', 'warn_error_options': 'WarnErrorOptions(include=[], exclude=[])', 'send_anonymous_usage_stats': 'True'}
+[0m21:39:57.380469 [debug] [MainThread]: Starter project path: /Users/dougstrouth/.asdf/installs/python/3.12.4/lib/python3.12/site-packages/dbt/include/starter_project
+[0m21:39:57.392236 [info ] [MainThread]: 
+Your new dbt project "nfl_data" was created!
+
+For more information on how to configure the profiles.yml file,
+please consult the dbt documentation here:
+
+  https://docs.getdbt.com/docs/configure-your-profile
+
+One more thing:
+
+Need help? Don't hesitate to reach out to us via GitHub issues or on Slack:
+
+  https://community.getdbt.com/
+
+Happy modeling!
+
+[0m21:39:57.392793 [info ] [MainThread]: Setting up your profile.

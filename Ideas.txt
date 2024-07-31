@@ -1,0 +1,2 @@
+add in a thing to look up roster from that particular game 
+Is there a db that has unique game ids already?

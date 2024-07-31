@@ -1,0 +1,220 @@
+version: 2
+
+sources:
+  - name: nfl_data
+    database: nfl
+    schema: main
+    tables:
+      - name: dim_stadiums
+        columns:
+          - name: stadium_name
+            data_type: varchar
+          - name: stadium_location
+            data_type: varchar
+          - name: stadium_open
+            data_type: bigint
+          - name: stadium_close
+            data_type: bigint
+          - name: stadium_type
+            data_type: varchar
+          - name: stadium_address
+            data_type: varchar
+          - name: stadium_weather_station_zipcode
+            data_type: varchar
+          - name: stadium_weather_type
+            data_type: varchar
+          - name: stadium_capacity
+            data_type: varchar
+          - name: stadium_surface
+            data_type: varchar
+          - name: stadium_weather_station
+            data_type: varchar
+          - name: stadium_weather_station_name
+            data_type: varchar
+          - name: stadium_latitude
+            data_type: double
+          - name: stadium_longitude
+            data_type: double
+          - name: stadium_azimuthangle
+            data_type: double
+          - name: stadium_elevation
+            data_type: double
+
+      - name: dim_teams
+        columns:
+          - name: team_name
+            data_type: varchar
+          - name: team_name_short
+            data_type: varchar
+          - name: team_id
+            data_type: varchar
+          - name: team_id_pfr
+            data_type: varchar
+          - name: team_conference
+            data_type: varchar
+          - name: team_division
+            data_type: varchar
+          - name: team_conference_pre2002
+            data_type: varchar
+          - name: team_division_pre2002
+            data_type: varchar
+
+      - name: nfl_stadiums
+        columns:
+          - name: stadium_name
+            data_type: varchar
+          - name: stadium_location
+            data_type: varchar
+          - name: stadium_open
+            data_type: bigint
+          - name: stadium_close
+            data_type: bigint
+          - name: stadium_type
+            data_type: varchar
+          - name: stadium_address
+            data_type: varchar
+          - name: stadium_weather_station_zipcode
+            data_type: varchar
+          - name: stadium_weather_type
+            data_type: varchar
+          - name: stadium_capacity
+            data_type: varchar
+          - name: stadium_surface
+            data_type: varchar
+          - name: stadium_weather_station
+            data_type: varchar
+          - name: stadium_weather_station_name
+            data_type: varchar
+          - name: stadium_latitude
+            data_type: double
+          - name: stadium_longitude
+            data_type: double
+          - name: stadium_azimuthangle
+            data_type: double
+          - name: stadium_elevation
+            data_type: double
+
+      - name: nfl_teams
+        columns:
+          - name: team_name
+            data_type: varchar
+          - name: team_name_short
+            data_type: varchar
+          - name: team_id
+            data_type: varchar
+          - name: team_id_pfr
+            data_type: varchar
+          - name: team_conference
+            data_type: varchar
+          - name: team_division
+            data_type: varchar
+          - name: team_conference_pre2002
+            data_type: varchar
+          - name: team_division_pre2002
+            data_type: varchar
+
+      - name: scores
+        columns:
+          - name: schedule_date
+            data_type: date
+          - name: schedule_season
+            data_type: bigint
+          - name: schedule_week
+            data_type: varchar
+          - name: schedule_playoff
+            data_type: boolean
+          - name: team_home
+            data_type: varchar
+          - name: score_home
+            data_type: bigint
+          - name: score_away
+            data_type: bigint
+          - name: team_away
+            data_type: varchar
+          - name: team_favorite_id
+            data_type: varchar
+          - name: spread_favorite
+            data_type: double
+          - name: over_under_line
+            data_type: varchar
+          - name: stadium
+            data_type: varchar
+          - name: stadium_neutral
+            data_type: boolean
+          - name: weather_temperature
+            data_type: bigint
+          - name: weather_wind_mph
+            data_type: bigint
+          - name: weather_humidity
+            data_type: bigint
+          - name: weather_detail
+            data_type: varchar
+          - name: stadium_name
+            data_type: varchar
+          - name: stadium_location
+            data_type: varchar
+          - name: stadium_open
+            data_type: bigint
+          - name: stadium_close
+            data_type: bigint
+          - name: stadium_type
+            data_type: varchar
+          - name: stadium_address
+            data_type: varchar
+          - name: stadium_weather_station_zipcode
+            data_type: varchar
+          - name: stadium_weather_type
+            data_type: varchar
+          - name: stadium_capacity
+            data_type: varchar
+          - name: stadium_surface
+            data_type: varchar
+          - name: stadium_weather_station
+            data_type: varchar
+          - name: stadium_weather_station_name
+            data_type: varchar
+          - name: stadium_latitude
+            data_type: double
+          - name: stadium_longitude
+            data_type: double
+          - name: stadium_azimuthangle
+            data_type: double
+          - name: stadium_elevation
+            data_type: double
+
+      - name: spreadspoke_scores
+        columns:
+          - name: schedule_date
+            data_type: date
+          - name: schedule_season
+            data_type: bigint
+          - name: schedule_week
+            data_type: varchar
+          - name: schedule_playoff
+            data_type: boolean
+          - name: team_home
+            data_type: varchar
+          - name: score_home
+            data_type: bigint
+          - name: score_away
+            data_type: bigint
+          - name: team_away
+            data_type: varchar
+          - name: team_favorite_id
+            data_type: varchar
+          - name: spread_favorite
+            data_type: double
+          - name: over_under_line
+            data_type: varchar
+          - name: stadium
+            data_type: varchar
+          - name: stadium_neutral
+            data_type: boolean
+          - name: weather_temperature
+            data_type: bigint
+          - name: weather_wind_mph
+            data_type: bigint
+          - name: weather_humidity
+            data_type: bigint
+          - name: weather_detail
+            data_type: varchar

@@ -1,0 +1,29 @@
+need api to look up rosters
+
+What I did in profiles you point to file path
+sources then is just database, schema, tables from the describe command or the code gen worked but I had to change my source name
+dbt run-operation generate_source --args '{"schema_name": "main", "generate_columns": true, "include_database":true,"include_schema":true}';
+
+
+
+
+
+# not super useful
+could probably script this from describe table in duckdb
+dbt run-operation codegen.create_base_models --args '{source_name: nfl_data, tables: ["nfl_stadiums","spreadspoke_scores","nfl_teams"]}'
+
+# this ran really well if you already had names maybe even without them
+
+dbt run-operation generate_source --args '{"schema_name": "main", "generate_columns": true, "include_database":true,"include_schema":true}'
+
+
+
+# this should give all the model information for the models.yml
+
+
+dbt run-operation generate_model_yaml --args '{"model_names": ["dim_stadiums","scores","dim_teams"]}'
+
+
+
+might want this at the end of the gold pipeline:
+https://docs.getdbt.com/docs/build/exposures
