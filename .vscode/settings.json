@@ -1,0 +1,10 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "driver": "DuckDB",
+            "name": "nfl_data",
+            "database": "/Users/dougstrouth/Documents/Code/datasets/sports/NFL/nfl_scores_and_betting/nfl.duckdb"
+        }
+    ]
+}
