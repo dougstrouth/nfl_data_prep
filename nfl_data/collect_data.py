@@ -4,13 +4,79 @@ import pandas as pd
 import subprocess
 import duckdb
 from bs4 import BeautifulSoup
+from io import StringIO
+import logging
+
+# Set up logging
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
+
+
+def download_file(url, local_path):
+    """Download a file from a URL to a local path."""
+    try:
+        response = requests.get(url)
+        response.raise_for_status()  # Check if the request was successful
+        with open(local_path, "wb") as file:
+            file.write(response.content)
+        logging.info(f"Downloaded file from {url} to {local_path}")
+    except requests.RequestException as e:
+        logging.error(f"Failed to download file from {url}: {e}")
+        raise
+
+
+def convert_excel_to_csv(excel_path, csv_path):
+    """Convert an Excel file to a CSV file."""
+    try:
+        df = pd.read_excel(excel_path)
+        df.to_csv(csv_path, index=False)
+        logging.info(f"Converted {excel_path} to {csv_path}")
+    except Exception as e:
+        logging.error(f"Failed to convert {excel_path} to CSV: {e}")
+        raise
+
+
+def create_duckdb_tables(duckdb_file_path, csv_paths):
+    """Create tables in DuckDB from CSV files."""
+    try:
+        con = duckdb.connect(duckdb_file_path)
+        for table_name, csv_path in csv_paths.items():
+            con.execute(
+                f"CREATE TABLE IF NOT EXISTS check_csv.{table_name} AS SELECT * FROM read_csv_auto('{csv_path}')"
+            )
+        logging.info("Created tables in DuckDB.")
+    except Exception as e:
+        logging.error(f"Failed to create tables in DuckDB: {e}")
+        raise
+    finally:
+        con.close()
+
+
+def query_duckdb_metadata(duckdb_file_path):
+    """Query DuckDB's information_schema.columns view and return a DataFrame."""
+    try:
+        con = duckdb.connect(duckdb_file_path)
+        query = """
+        SELECT table_schema, table_name, column_name, data_type
+        FROM information_schema.columns
+        WHERE table_schema = 'check_csv'
+        """
+        df = con.execute(query).fetchdf()
+        logging.info("Queried DuckDB metadata.")
+        return df
+    except Exception as e:
+        logging.error(f"Failed to query DuckDB metadata: {e}")
+        raise
+    finally:
+        con.close()
 
 
 def ingest_data_to_duckdb(internal_data_folder):
-    # Define the path for the DuckDB file
+    """Main function to ingest data into DuckDB."""
     duckdb_file_path = os.path.join(internal_data_folder, "nfl_data.duckdb")
 
-    # Ensure the DuckDB file exists or create it using the CLI command
+    # Ensure the DuckDB file exists or create it
     if not os.path.exists(duckdb_file_path):
         subprocess.run(
             ["duckdb", duckdb_file_path, "-s", "CREATE SCHEMA IF NOT EXISTS check_csv"]
@@ -22,63 +88,29 @@ def ingest_data_to_duckdb(internal_data_folder):
     )
     nfl_teams_path = os.path.join(internal_data_folder, "nfl_teams.csv")
 
-    spreadspoke_scores = pd.read_csv(spreadspoke_scores_path)
-    nfl_teams = pd.read_csv(nfl_teams_path)
-
-    # Request and load external data sources
-    # Pro Football Reference (1966-2017)
-    years = range(1966, 2017 + 1)
-    pfr_games = []
-
-    for year in years:
-        url = (
-            f"https://www.pro-football-reference.com/years/{year}/games.htm#games::none"
-        )
-        response = requests.get(url)
-        soup = BeautifulSoup(response.content, "html.parser")
-        table = soup.find("table")
-        df = pd.read_html(str(table))[0]
-        df["year"] = year
-        pfr_games.append(df)
-
-    pfr_games_df = pd.concat(pfr_games, ignore_index=True)
-    pfr_games_csv_path = os.path.join(internal_data_folder, "pfr_games_1966_2017.csv")
-    pfr_games_df.to_csv(pfr_games_csv_path, index=False)
-
     # Aussportsbetting.com Historical NFL Data
-    url = "http://www.aussportsbetting.com/historical_data/nfl.xlsx"
-    response = requests.get(url)
+    nfl_asb_url = "http://www.aussportsbetting.com/historical_data/nfl.xlsx"
     nfl_asb_excel_path = os.path.join(internal_data_folder, "nfl_aussportsbetting.xlsx")
-
-    with open(nfl_asb_excel_path, "wb") as file:
-        file.write(response.content)
-
-    # Convert Excel to CSV
-    nfl_asb = pd.read_excel(nfl_asb_excel_path)
     nfl_asb_csv_path = os.path.join(internal_data_folder, "nfl_aussportsbetting.csv")
-    nfl_asb.to_csv(nfl_asb_csv_path, index=False)
 
-    # Connect to DuckDB and create tables
-    con = duckdb.connect(duckdb_file_path)
+    download_file(nfl_asb_url, nfl_asb_excel_path)
+    convert_excel_to_csv(nfl_asb_excel_path, nfl_asb_csv_path)
 
-    # Creating tables and inserting data with the required format
-    con.execute(
-        f"CREATE TABLE IF NOT EXISTS check_csv.spreadspoke_scores AS SELECT * FROM read_csv_auto('{spreadspoke_scores_path}')"
-    )
-    con.execute(
-        f"CREATE TABLE IF NOT EXISTS check_csv.nfl_teams AS SELECT * FROM read_csv_auto('{nfl_teams_path}')"
-    )
-    con.execute(
-        f"CREATE TABLE IF NOT EXISTS check_csv.pfr_games AS SELECT * FROM read_csv_auto('{pfr_games_csv_path}')"
-    )
-    con.execute(
-        f"CREATE TABLE IF NOT EXISTS check_csv.nfl_asb AS SELECT * FROM read_csv_auto('{nfl_asb_csv_path}')"
-    )
+    # Prepare paths for DuckDB
+    csv_paths = {
+        "spreadspoke_scores": spreadspoke_scores_path,
+        "nfl_teams": nfl_teams_path,
+        "nfl_asb": nfl_asb_csv_path,
+    }
 
-    # Close the connection
-    con.close()
+    # Create tables in DuckDB
+    create_duckdb_tables(duckdb_file_path, csv_paths)
 
 
 # Example usage:
 internal_data_path = "/Users/dougstrouth/Documents/Code/datasets/sports/NFL/raw_data"
 ingest_data_to_duckdb(internal_data_path)
+
+# Query DuckDB metadata
+metadata_df = query_duckdb_metadata(internal_data_path)
+print(metadata_df)
