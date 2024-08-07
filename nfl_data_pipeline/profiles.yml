@@ -1,0 +1,13 @@
+nfl_data_pipeline:
+  outputs:
+    dev:
+      type: duckdb
+      path: /Users/dougstrouth/Documents/Code/datasets/sports/NFL/raw_data/nfl_data.duckdb
+      threads: 2
+
+    prod:
+      type: duckdb
+      path: /Users/dougstrouth/Documents/Code/datasets/sports/NFL/raw_data/nfl_data.duckdb
+      threads: 4
+
+  target: dev

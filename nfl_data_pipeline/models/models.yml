@@ -1,0 +1,562 @@
+version: 2
+
+models:
+  - name: check_csv_spreadspoke_scores
+    description: ""
+    columns:
+      - name: schedule_date
+        data_type: date
+        description: ""
+
+      - name: schedule_season
+        data_type: bigint
+        description: ""
+
+      - name: schedule_week
+        data_type: varchar
+        description: ""
+
+      - name: schedule_playoff
+        data_type: boolean
+        description: ""
+
+      - name: team_home
+        data_type: varchar
+        description: ""
+
+      - name: score_home
+        data_type: bigint
+        description: ""
+
+      - name: score_away
+        data_type: bigint
+        description: ""
+
+      - name: team_away
+        data_type: varchar
+        description: ""
+
+      - name: team_favorite_id
+        data_type: varchar
+        description: ""
+
+      - name: spread_favorite
+        data_type: double
+        description: ""
+
+      - name: over_under_line
+        data_type: varchar
+        description: ""
+
+      - name: stadium
+        data_type: varchar
+        description: ""
+
+      - name: stadium_neutral
+        data_type: boolean
+        description: ""
+
+      - name: weather_temperature
+        data_type: bigint
+        description: ""
+
+      - name: weather_wind_mph
+        data_type: bigint
+        description: ""
+
+      - name: weather_humidity
+        data_type: bigint
+        description: ""
+
+      - name: weather_detail
+        data_type: varchar
+        description: ""
+
+  - name: check_csv_nfl_asb
+    description: ""
+    columns:
+      - name: date
+        data_type: timestamp
+        description: ""
+
+      - name: home_team
+        data_type: varchar
+        description: ""
+
+      - name: away_team
+        data_type: varchar
+        description: ""
+
+      - name: home_score
+        data_type: bigint
+        description: ""
+
+      - name: away_score
+        data_type: bigint
+        description: ""
+
+      - name: overtime
+        data_type: varchar
+        description: ""
+
+      - name: playoff_game
+        data_type: varchar
+        description: ""
+
+      - name: neutral_venue
+        data_type: varchar
+        description: ""
+
+      - name: home_odds_open
+        data_type: double
+        description: ""
+
+      - name: home_odds_min
+        data_type: double
+        description: ""
+
+      - name: home_odds_max
+        data_type: double
+        description: ""
+
+      - name: home_odds_close
+        data_type: double
+        description: ""
+
+      - name: away_odds_open
+        data_type: double
+        description: ""
+
+      - name: away_odds_min
+        data_type: double
+        description: ""
+
+      - name: away_odds_max
+        data_type: double
+        description: ""
+
+      - name: away_odds_close
+        data_type: double
+        description: ""
+
+      - name: home_line_open
+        data_type: double
+        description: ""
+
+      - name: home_line_min
+        data_type: double
+        description: ""
+
+      - name: home_line_max
+        data_type: double
+        description: ""
+
+      - name: home_line_close
+        data_type: double
+        description: ""
+
+      - name: away_line_open
+        data_type: double
+        description: ""
+
+      - name: away_line_min
+        data_type: double
+        description: ""
+
+      - name: away_line_max
+        data_type: double
+        description: ""
+
+      - name: away_line_close
+        data_type: double
+        description: ""
+
+      - name: home_line_odds_open
+        data_type: double
+        description: ""
+
+      - name: home_line_odds_min
+        data_type: double
+        description: ""
+
+      - name: home_line_odds_max
+        data_type: double
+        description: ""
+
+      - name: home_line_odds_close
+        data_type: double
+        description: ""
+
+      - name: away_line_odds_open
+        data_type: double
+        description: ""
+
+      - name: away_line_odds_min
+        data_type: double
+        description: ""
+
+      - name: away_line_odds_max
+        data_type: double
+        description: ""
+
+      - name: away_line_odds_close
+        data_type: double
+        description: ""
+
+      - name: total_score_open
+        data_type: double
+        description: ""
+
+      - name: total_score_min
+        data_type: double
+        description: ""
+
+      - name: total_score_max
+        data_type: double
+        description: ""
+
+      - name: total_score_close
+        data_type: double
+        description: ""
+
+      - name: total_score_over_open
+        data_type: double
+        description: ""
+
+      - name: total_score_over_min
+        data_type: double
+        description: ""
+
+      - name: total_score_over_max
+        data_type: double
+        description: ""
+
+      - name: total_score_over_close
+        data_type: double
+        description: ""
+
+      - name: total_score_under_open
+        data_type: double
+        description: ""
+
+      - name: total_score_under_min
+        data_type: double
+        description: ""
+
+      - name: total_score_under_max
+        data_type: double
+        description: ""
+
+      - name: total_score_under_close
+        data_type: double
+        description: ""
+
+      - name: notes
+        data_type: varchar
+        description: ""
+
+  - name: detail_odds_teams
+    description: ""
+    columns:
+      - name: schedule_date
+        data_type: date
+        description: ""
+
+      - name: schedule_season
+        data_type: bigint
+        description: ""
+
+      - name: schedule_week
+        data_type: varchar
+        description: ""
+
+      - name: schedule_playoff
+        data_type: boolean
+        description: ""
+
+      - name: team_home
+        data_type: varchar
+        description: ""
+
+      - name: team_home_name
+        data_type: varchar
+        description: ""
+
+      - name: score_home
+        data_type: bigint
+        description: ""
+
+      - name: score_away
+        data_type: bigint
+        description: ""
+
+      - name: team_away
+        data_type: varchar
+        description: ""
+
+      - name: team_away_name
+        data_type: varchar
+        description: ""
+
+      - name: team_favorite_id
+        data_type: varchar
+        description: ""
+
+      - name: spread_favorite
+        data_type: double
+        description: ""
+
+      - name: over_under_line
+        data_type: varchar
+        description: ""
+
+      - name: stadium
+        data_type: varchar
+        description: ""
+
+      - name: stadium_neutral
+        data_type: boolean
+        description: ""
+
+      - name: weather_temperature
+        data_type: bigint
+        description: ""
+
+      - name: weather_wind_mph
+        data_type: bigint
+        description: ""
+
+      - name: weather_humidity
+        data_type: bigint
+        description: ""
+
+      - name: weather_detail
+        data_type: varchar
+        description: ""
+
+  - name: scores_with_teams
+    description: ""
+    columns:
+      - name: date
+        data_type: timestamp
+        description: ""
+
+      - name: home_team_name
+        data_type: varchar
+        description: ""
+
+      - name: home_team_id
+        data_type: varchar
+        description: ""
+
+      - name: away_team_name
+        data_type: varchar
+        description: ""
+
+      - name: away_team_id
+        data_type: varchar
+        description: ""
+
+      - name: home_score
+        data_type: bigint
+        description: ""
+
+      - name: away_score
+        data_type: bigint
+        description: ""
+
+      - name: overtime
+        data_type: varchar
+        description: ""
+
+      - name: playoff_game
+        data_type: varchar
+        description: ""
+
+      - name: neutral_venue
+        data_type: varchar
+        description: ""
+
+      - name: home_odds_open
+        data_type: double
+        description: ""
+
+      - name: home_odds_min
+        data_type: double
+        description: ""
+
+      - name: home_odds_max
+        data_type: double
+        description: ""
+
+      - name: home_odds_close
+        data_type: double
+        description: ""
+
+      - name: away_odds_open
+        data_type: double
+        description: ""
+
+      - name: away_odds_min
+        data_type: double
+        description: ""
+
+      - name: away_odds_max
+        data_type: double
+        description: ""
+
+      - name: away_odds_close
+        data_type: double
+        description: ""
+
+      - name: home_line_open
+        data_type: double
+        description: ""
+
+      - name: home_line_min
+        data_type: double
+        description: ""
+
+      - name: home_line_max
+        data_type: double
+        description: ""
+
+      - name: home_line_close
+        data_type: double
+        description: ""
+
+      - name: away_line_open
+        data_type: double
+        description: ""
+
+      - name: away_line_min
+        data_type: double
+        description: ""
+
+      - name: away_line_max
+        data_type: double
+        description: ""
+
+      - name: away_line_close
+        data_type: double
+        description: ""
+
+      - name: home_line_odds_open
+        data_type: double
+        description: ""
+
+      - name: home_line_odds_min
+        data_type: double
+        description: ""
+
+      - name: home_line_odds_max
+        data_type: double
+        description: ""
+
+      - name: home_line_odds_close
+        data_type: double
+        description: ""
+
+      - name: away_line_odds_open
+        data_type: double
+        description: ""
+
+      - name: away_line_odds_min
+        data_type: double
+        description: ""
+
+      - name: away_line_odds_max
+        data_type: double
+        description: ""
+
+      - name: away_line_odds_close
+        data_type: double
+        description: ""
+
+      - name: total_score_open
+        data_type: double
+        description: ""
+
+      - name: total_score_min
+        data_type: double
+        description: ""
+
+      - name: total_score_max
+        data_type: double
+        description: ""
+
+      - name: total_score_close
+        data_type: double
+        description: ""
+
+      - name: total_score_over_open
+        data_type: double
+        description: ""
+
+      - name: total_score_over_min
+        data_type: double
+        description: ""
+
+      - name: total_score_over_max
+        data_type: double
+        description: ""
+
+      - name: total_score_over_close
+        data_type: double
+        description: ""
+
+      - name: total_score_under_open
+        data_type: double
+        description: ""
+
+      - name: total_score_under_min
+        data_type: double
+        description: ""
+
+      - name: total_score_under_max
+        data_type: double
+        description: ""
+
+      - name: total_score_under_close
+        data_type: double
+        description: ""
+
+      - name: notes
+        data_type: varchar
+        description: ""
+
+  - name: check_csv_nfl_teams
+    description: ""
+    columns:
+      - name: team_name
+        data_type: varchar
+        description: ""
+
+      - name: team_name_short
+        data_type: varchar
+        description: ""
+
+      - name: team_id
+        data_type: varchar
+        description: ""
+
+      - name: team_id_pfr
+        data_type: varchar
+        description: ""
+
+      - name: team_conference
+        data_type: varchar
+        description: ""
+
+      - name: team_division
+        data_type: varchar
+        description: ""
+
+      - name: team_conference_pre2002
+        data_type: varchar
+        description: ""
+
+      - name: team_division_pre2002
+        data_type: varchar
+        description: ""
+

@@ -1,0 +1,14 @@
+version: 2
+
+sources:
+  - name: check_csv
+    description: "The primary loading place for all the csvs"
+    database: nfl_data
+    schema: check_csv
+    tables:
+      - name: nfl_asb
+        description: "Australian scores betting info"
+      - name: nfl_teams
+        description: "Team listing"
+      - name: spreadspoke_scores
+        description: "Scores of the various games and some associated odds"

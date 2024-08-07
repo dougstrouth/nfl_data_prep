@@ -1,0 +1,5 @@
+# this generates the sources so you can get the address to call throughout the models
+# if I use the generate model thing in the source yml after creation I have to then delete those sqls after 
+dbt --quiet run-operation generate_source --args '{"schema_name": "check_csv", "include_descriptions":"True","include_database":"True","include_schema":"True"}' > models/sources.yml
+
+dbt run-operation generate_model_yaml --args '{"model_names": ["*"]}'

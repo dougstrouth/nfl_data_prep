@@ -30,6 +30,9 @@ def convert_excel_to_csv(excel_path, csv_path):
     """Convert an Excel file to a CSV file."""
     try:
         df = pd.read_excel(excel_path)
+        df.columns = [col.replace(" ", "_") for col in df.columns]
+        df.columns = [col.replace("?", "") for col in df.columns]
+
         df.to_csv(csv_path, index=False)
         logging.info(f"Converted {excel_path} to {csv_path}")
     except Exception as e:
@@ -42,6 +45,7 @@ def create_duckdb_tables(duckdb_file_path, csv_paths):
     try:
         con = duckdb.connect(duckdb_file_path)
         for table_name, csv_path in csv_paths.items():
+            con.execute(f"DROP TABLE check_csv.{table_name}")
             con.execute(
                 f"CREATE TABLE IF NOT EXISTS check_csv.{table_name} AS SELECT * FROM read_csv_auto('{csv_path}')"
             )
@@ -53,17 +57,24 @@ def create_duckdb_tables(duckdb_file_path, csv_paths):
         con.close()
 
 
-def query_duckdb_metadata(duckdb_file_path):
+def query_duckdb_metadata(duckdb_file_path, schema="check_csv"):
     """Query DuckDB's information_schema.columns view and return a DataFrame."""
     try:
         con = duckdb.connect(duckdb_file_path)
-        query = """
+        query = f"""
         SELECT table_schema, table_name, column_name, data_type
         FROM information_schema.columns
-        WHERE table_schema = 'check_csv'
+        WHERE table_schema = '{schema}'
         """
         df = con.execute(query).fetchdf()
         logging.info("Queried DuckDB metadata.")
+
+        # Save the DataFrame to a CSV file
+        metadata_csv_path = os.path.join(
+            os.path.dirname(duckdb_file_path), "metadata.csv"
+        )
+        df.to_csv(metadata_csv_path, index=False)
+        logging.info(f"Metadata saved to {metadata_csv_path}")
         return df
     except Exception as e:
         logging.error(f"Failed to query DuckDB metadata: {e}")
@@ -72,11 +83,16 @@ def query_duckdb_metadata(duckdb_file_path):
         con.close()
 
 
+# Example usage
+duckdb_file_path = "/path/to/your/duckdb/file"
+query_duckdb_metadata(duckdb_file_path)
+
+
 def ingest_data_to_duckdb(internal_data_folder):
     """Main function to ingest data into DuckDB."""
     duckdb_file_path = os.path.join(internal_data_folder, "nfl_data.duckdb")
 
-    # Ensure the DuckDB file exists or create it
+    # Ensure the DuckDB file exists or create the schema
     if not os.path.exists(duckdb_file_path):
         subprocess.run(
             ["duckdb", duckdb_file_path, "-s", "CREATE SCHEMA IF NOT EXISTS check_csv"]
@@ -107,10 +123,11 @@ def ingest_data_to_duckdb(internal_data_folder):
     create_duckdb_tables(duckdb_file_path, csv_paths)
 
 
-# Example usage:
+# Example usage
 internal_data_path = "/Users/dougstrouth/Documents/Code/datasets/sports/NFL/raw_data"
 ingest_data_to_duckdb(internal_data_path)
 
 # Query DuckDB metadata
-metadata_df = query_duckdb_metadata(internal_data_path)
+duckdb_file_path = os.path.join(internal_data_path, "nfl_data.duckdb")
+metadata_df = query_duckdb_metadata(duckdb_file_path)
 print(metadata_df)
