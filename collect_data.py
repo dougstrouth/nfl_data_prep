@@ -83,9 +83,13 @@ def query_duckdb_metadata(duckdb_file_path, schema="check_csv"):
         con.close()
 
 
-# Example usage
-duckdb_file_path = "/path/to/your/duckdb/file"
-query_duckdb_metadata(duckdb_file_path)
+"""
+Need to break this apart and add where it iterates through a 
+folder to create tables based on all the csv except those defined
+to exclude like data_definition.csv
+
+
+"""
 
 
 def ingest_data_to_duckdb(internal_data_folder):
