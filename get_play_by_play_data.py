@@ -1,15 +1,14 @@
 import nfl_data_py as nfl
 import os
 import logging
+from general_utilities import setup_logging
 
 
-def setup_logging(log_file="debug.log"):
-    logging.basicConfig(
-        filename=log_file,
-        level=logging.DEBUG,
-        format="%(asctime)s - %(levelname)s - %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S",
-    )
+import nfl_data_py as nfl
+import pandas as pd
+import logging
+import os
+from general_utilities import setup_logging
 
 
 def clean_column_names(df):
@@ -30,6 +29,54 @@ def save_data_to_csv(data, folder_path, data_point, *args):
     data = clean_column_names(data)
     data.to_csv(file_path, index=False)
     logging.info(f"Successfully saved data to {file_path}.")
+
+
+def fetch_and_save_weekly_rosters(file_path, start_year=2010, final_year=2024):
+    """Fetch weekly rosters data and save to CSV."""
+    years = list(range(start_year, final_year))
+
+    try:
+        # Fetch weekly rosters data
+        data = nfl.import_weekly_rosters(years)
+
+        # Check for duplicate indices in the data
+        if data.index.duplicated().any():
+            logging.error("Duplicate indices found in the rosters DataFrame.")
+            # Drop duplicates while keeping the first occurrence
+            data = data[~data.index.duplicated(keep="first")]
+
+        # Ensure that the index is unique
+        if data.index.duplicated().any():
+            raise ValueError("Duplicate indices remain after attempted resolution.")
+
+        # Log the shape and index details
+        logging.debug(f"Data shape: {data.shape}")
+        logging.debug(f"Data index: {data.index}")
+
+        # Check if 'birth_date' column exists before processing
+        if "birth_date" in data.columns:
+            try:
+                roster_dates = data["gameday"]
+                data["age"] = (
+                    (
+                        pd.to_datetime(roster_dates)
+                        - pd.to_datetime(data["birth_date"])
+                    ).dt.days
+                    / 365.25
+                ).round(3)
+                logging.debug("Age column successfully calculated.")
+            except Exception as e:
+                logging.error(f"Failed to calculate the 'age' column: {e}")
+        else:
+            logging.warning("'birth_date' column not found in the data.")
+
+        # Save the data to CSV
+        save_data_to_csv(data, file_path, "weekly_rosters", start_year, final_year - 1)
+
+    except ValueError as ve:
+        logging.error(f"ValueError occurred: {ve}")
+    except Exception as e:
+        logging.error(f"An unexpected error occurred: {e}")
 
 
 def fetch_play_by_play_data(years, folder_path):
@@ -120,21 +167,18 @@ def fetch_team_descriptions(folder_path):
 
 def fetch_and_save_data(folder_path, start_year=2010, final_year=2024):
     """Fetch and save NFL data to CSV files."""
-    # Create a range of years
     years = list(range(start_year, final_year))
 
     min_years = {"depth_charts": 2001, "injuries": 2009, "qbr": 2006, "ftn_data": 2022}
 
-    # Adjust the range for functions without a specific min_year requirement
+    fetch_and_save_weekly_rosters(folder_path, start_year, final_year)
     fetch_play_by_play_data(years, folder_path)
     fetch_seasonal_pfr_data(folder_path)
     fetch_weekly_pfr_data(folder_path)
 
-    # Iterate over data points with specific min_year requirements
     for data_point, min_year in min_years.items():
         func = getattr(nfl, f"import_{data_point}", None)
         if func:
-            # Adjust years to start from the year after min_year
             adjusted_years = list(range(min_year + 1, final_year))
             fetch_yearly_data(func, data_point, adjusted_years, folder_path)
 
@@ -146,12 +190,12 @@ def main():
     file_path = (
         "/Users/dougstrouth/Documents/Code/datasets/sports/NFL/raw_data/play_by_play"
     )
-    years = list(range(2010, 2024))
-    print(years)
     setup_logging()
-    # fetch_weekly_pfr_data(file_path)
     fetch_and_save_data(file_path)
 
+
+# Example usage:
+# main()
 
 if __name__ == "__main__":
     main()

@@ -2,6 +2,9 @@ import logging
 import duckdb
 import glob
 import os
+from general_utilities import setup_logging
+
+setup_logging()
 
 
 def execute_sql_from_file(sql_file, folder_path, duckdb_file):
@@ -83,10 +86,10 @@ folder_path = (
 duckdb_file = (
     "/Users/dougstrouth/Documents/Code/datasets/sports/NFL/raw_data/nfl_data.duckdb"
 )
-schema= "play_by_play"
+schema = "play_by_play"
 # Example usage
-#create_tables_from_csvs(duckdb_file,schema , folder_path)
-query_duckdb_metadata(duckdb_file,schema)
+# create_tables_from_csvs(duckdb_file,schema , folder_path)
+query_duckdb_metadata(duckdb_file, schema)
 
 # Example usage
 # create_tables_from_csv('', duckdb_file, 'play_by_play')
