@@ -38,40 +38,42 @@ def fetch_and_save_weekly_rosters(file_path, start_year=2010, final_year=2024):
     try:
         # Fetch weekly rosters data
         data = nfl.import_weekly_rosters(years)
+        logging.debug("Data fetched successfully.")
 
-        # Check for duplicate indices in the data
+        # Check and handle duplicate indices
         if data.index.duplicated().any():
-            logging.error("Duplicate indices found in the rosters DataFrame.")
-            # Drop duplicates while keeping the first occurrence
+            logging.error("Duplicate indices found. Removing duplicates.")
             data = data[~data.index.duplicated(keep="first")]
+            logging.debug(f"DataFrame shape after index deduplication: {data.shape}")
 
-        # Ensure that the index is unique
+        # Reset index if necessary
         if data.index.duplicated().any():
-            raise ValueError("Duplicate indices remain after attempted resolution.")
+            data = data.reset_index(drop=True)
+            logging.debug("Index reset to remove duplicates.")
 
-        # Log the shape and index details
-        logging.debug(f"Data shape: {data.shape}")
-        logging.debug(f"Data index: {data.index}")
+        # Check and handle duplicate columns
+        if data.columns.duplicated().any():
+            logging.error("Duplicate columns found. Removing duplicates.")
+            data = data.loc[:, ~data.columns.duplicated()]
+            logging.debug(f"Columns after removing duplicates: {data.columns}")
 
         # Check if 'birth_date' column exists before processing
         if "birth_date" in data.columns:
-            try:
-                roster_dates = data["gameday"]
-                data["age"] = (
-                    (
-                        pd.to_datetime(roster_dates)
-                        - pd.to_datetime(data["birth_date"])
-                    ).dt.days
-                    / 365.25
-                ).round(3)
-                logging.debug("Age column successfully calculated.")
-            except Exception as e:
-                logging.error(f"Failed to calculate the 'age' column: {e}")
+            logging.debug("Calculating 'age' column.")
+            roster_dates = data["gameday"]
+            data["age"] = (
+                (
+                    pd.to_datetime(roster_dates) - pd.to_datetime(data["birth_date"])
+                ).dt.days
+                / 365.25
+            ).round(3)
+            logging.debug("Age column successfully calculated.")
         else:
             logging.warning("'birth_date' column not found in the data.")
 
         # Save the data to CSV
         save_data_to_csv(data, file_path, "weekly_rosters", start_year, final_year - 1)
+        logging.debug("Data saved to CSV successfully.")
 
     except ValueError as ve:
         logging.error(f"ValueError occurred: {ve}")
@@ -172,18 +174,18 @@ def fetch_and_save_data(folder_path, start_year=2010, final_year=2024):
     min_years = {"depth_charts": 2001, "injuries": 2009, "qbr": 2006, "ftn_data": 2022}
 
     fetch_and_save_weekly_rosters(folder_path, start_year, final_year)
-    fetch_play_by_play_data(years, folder_path)
-    fetch_seasonal_pfr_data(folder_path)
-    fetch_weekly_pfr_data(folder_path)
+    # fetch_play_by_play_data(years, folder_path)
+    # fetch_seasonal_pfr_data(folder_path)
+    # fetch_weekly_pfr_data(folder_path)
 
     for data_point, min_year in min_years.items():
         func = getattr(nfl, f"import_{data_point}", None)
         if func:
             adjusted_years = list(range(min_year + 1, final_year))
-            fetch_yearly_data(func, data_point, adjusted_years, folder_path)
+            # fetch_yearly_data(func, data_point, adjusted_years, folder_path)
 
-    fetch_ids_data(folder_path)
-    fetch_team_descriptions(folder_path)
+    # fetch_ids_data(folder_path)
+    # fetch_team_descriptions(folder_path)
 
 
 def main():

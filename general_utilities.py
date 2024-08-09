@@ -2,15 +2,20 @@ import logging
 import os
 import sys
 import inspect
+from IPython import get_ipython
 
 def setup_logging(log_file=None):
     if log_file is None:
         if 'ipykernel' in sys.modules:
             try:
-                # Get the current notebook path
-                notebook_name = os.path.splitext(os.path.basename(
-                    get_ipython().getoutput('ls *.ipynb')[0]))[0]
-                log_file = notebook_name + "_debug.log"
+                ipython = get_ipython()
+                if ipython is not None:
+                    # Access the current notebook path from IPython
+                    notebook_name = ipython.get_parent()['content']['name']
+                    log_file = os.path.splitext(notebook_name)[0] + "_debug.log"
+                else:
+                    # Fallback if IPython is not available
+                    log_file = "notebook_debug.log"
             except Exception:
                 # Fallback if the notebook name can't be determined
                 log_file = "notebook_debug.log"
