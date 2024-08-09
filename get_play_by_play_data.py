@@ -45,64 +45,36 @@ def fetch_play_by_play_data(years, folder_path):
         logging.error(f"Failed to fetch or save play-by-play data: {e}")
 
 
-def fetch_seasonal_pfr_data(years, folder_path):
+def fetch_seasonal_pfr_data(folder_path):
     """Fetch and save seasonal PFR data."""
-    # Filter out years before 2018
-    years = [year for year in years if year >= 2018]
-
-    if not years:
-        logging.warning("No valid years for fetching seasonal PFR data.")
-        return
 
     seasonal_s_types = ["pass", "rec", "rush"]
     for s_type in seasonal_s_types:
         try:
-            data = nfl.import_seasonal_pfr(s_type, years)
+            data = nfl.import_seasonal_pfr(s_type)
             if not data.empty:
                 data["s_type"] = s_type
                 data["data_point"] = "seasonal_pfr"
-                for year in years:
-                    year_data = data[data["year"] == year]
-                    if not year_data.empty:
-                        save_data_to_csv(
-                            year_data, folder_path, "seasonal_pfr", s_type, year
-                        )
-            else:
-                logging.warning(
-                    f"No data returned for s_type {s_type} in years {years}"
-                )
+                save_data_to_csv(data, folder_path, "seasonal_pfr", s_type)
         except Exception as e:
             logging.error(
                 f"Failed to fetch or save seasonal PFR data for s_type {s_type}: {e}"
             )
 
 
-def fetch_weekly_pfr_data(years, folder_path):
+def fetch_weekly_pfr_data(folder_path):
     """Fetch and save weekly PFR data."""
-    # Filter out years before 2018
-    years = [year for year in years if year >= 2018]
-
-    if not years:
-        logging.warning("No valid years for fetching weekly PFR data.")
-        return
 
     weekly_s_types = ["pass", "rec", "rush"]
     for s_type in weekly_s_types:
         try:
-            data = nfl.import_weekly_pfr(s_type, years)
+            data = nfl.import_weekly_pfr(s_type)
             if not data.empty:
                 data["s_type"] = s_type
                 data["data_point"] = "weekly_pfr"
-                for year in years:
-                    year_data = data[data["year"] == year]
-                    if not year_data.empty:
-                        save_data_to_csv(
-                            year_data, folder_path, "weekly_pfr", s_type, year
-                        )
+                save_data_to_csv(data, folder_path, "weekly_pfr", s_type)
             else:
-                logging.warning(
-                    f"No data returned for s_type {s_type} in years {years}"
-                )
+                logging.warning(f"No data returned for s_type {s_type}")
         except Exception as e:
             logging.error(
                 f"Failed to fetch or save weekly PFR data for s_type {s_type}: {e}"
@@ -155,8 +127,8 @@ def fetch_and_save_data(folder_path, start_year=2010, final_year=2024):
 
     # Adjust the range for functions without a specific min_year requirement
     fetch_play_by_play_data(years, folder_path)
-    fetch_seasonal_pfr_data(years, folder_path)
-    fetch_weekly_pfr_data(years, folder_path)
+    fetch_seasonal_pfr_data(folder_path)
+    fetch_weekly_pfr_data(folder_path)
 
     # Iterate over data points with specific min_year requirements
     for data_point, min_year in min_years.items():
@@ -174,7 +146,10 @@ def main():
     file_path = (
         "/Users/dougstrouth/Documents/Code/datasets/sports/NFL/raw_data/play_by_play"
     )
+    years = list(range(2010, 2024))
+    print(years)
     setup_logging()
+    # fetch_weekly_pfr_data(file_path)
     fetch_and_save_data(file_path)
 
 
