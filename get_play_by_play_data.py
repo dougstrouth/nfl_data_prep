@@ -32,48 +32,46 @@ def save_data_to_csv(data, folder_path, data_point, *args):
 
 
 def fetch_and_save_weekly_rosters(file_path, start_year=2010, final_year=2024):
-    """Fetch weekly rosters data and save to CSV."""
+    """Fetch weekly rosters data year by year, align columns, and save to CSV."""
     years = list(range(start_year, final_year))
 
+    combined_data = []
+
     try:
-        # Fetch weekly rosters data
-        data = nfl.import_weekly_rosters(years)
-        logging.debug("Data fetched successfully.")
+        for year in years:
+            logging.info(f"Fetching data for year {year}...")
+            data = nfl.import_weekly_rosters(years=[year])
+            logging.debug(f"Data for year {year} fetched successfully.")
 
-        # Check and handle duplicate indices
-        if data.index.duplicated().any():
-            logging.error("Duplicate indices found. Removing duplicates.")
-            data = data[~data.index.duplicated(keep="first")]
-            logging.debug(f"DataFrame shape after index deduplication: {data.shape}")
+            # Reset index to remove duplicate indices
+            if data.index.duplicated().any():
+                logging.error(f"Duplicate indices found for year {year}. Removing duplicates.")
+                data = data[~data.index.duplicated(keep='first')]
 
-        # Reset index if necessary
-        if data.index.duplicated().any():
-            data = data.reset_index(drop=True)
-            logging.debug("Index reset to remove duplicates.")
+            # Reset index if duplicates are still present
+            if data.index.duplicated().any():
+                data = data.reset_index(drop=True)
+                logging.debug(f"Index reset for year {year}.")
 
-        # Check and handle duplicate columns
-        if data.columns.duplicated().any():
-            logging.error("Duplicate columns found. Removing duplicates.")
-            data = data.loc[:, ~data.columns.duplicated()]
-            logging.debug(f"Columns after removing duplicates: {data.columns}")
+            # Append the processed data
+            combined_data.append(data)
+            logging.info(f"Data for year {year} processed and appended.")
 
-        # Check if 'birth_date' column exists before processing
-        if "birth_date" in data.columns:
-            logging.debug("Calculating 'age' column.")
-            roster_dates = data["gameday"]
-            data["age"] = (
-                (
-                    pd.to_datetime(roster_dates) - pd.to_datetime(data["birth_date"])
-                ).dt.days
-                / 365.25
-            ).round(3)
-            logging.debug("Age column successfully calculated.")
-        else:
-            logging.warning("'birth_date' column not found in the data.")
+        # Concatenate all DataFrames into a single DataFrame
+        if combined_data:
+            final_data = pd.concat(combined_data, ignore_index=True)
+            logging.debug("DataFrames concatenated successfully.")
 
-        # Save the data to CSV
-        save_data_to_csv(data, file_path, "weekly_rosters", start_year, final_year - 1)
-        logging.debug("Data saved to CSV successfully.")
+            # Check for and remove duplicate columns
+            if final_data.columns.duplicated().any():
+                duplicate_columns = final_data.columns[final_data.columns.duplicated()].unique()
+                logging.error(f"Duplicate columns found in combined data: {duplicate_columns}")
+                final_data = final_data.loc[:, ~final_data.columns.duplicated()]
+                logging.info("Duplicate columns removed from combined data.")
+
+            # Save the combined data to CSV
+            save_data_to_csv(final_data, file_path, "weekly_rosters", start_year, final_year - 1)
+            logging.info("Combined data saved to CSV successfully.")
 
     except ValueError as ve:
         logging.error(f"ValueError occurred: {ve}")
