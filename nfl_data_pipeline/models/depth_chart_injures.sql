@@ -1,0 +1,1 @@
+select * from play_by_play.depth_charts dp join play_by_play.injuries i on dp.gsis_id = i.gsis_id

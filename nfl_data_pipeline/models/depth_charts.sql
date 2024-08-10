@@ -1,1 +1,0 @@
-select * from play_by_play.depth_charts
