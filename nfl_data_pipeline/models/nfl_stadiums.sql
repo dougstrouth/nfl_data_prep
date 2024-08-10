@@ -1,0 +1,1 @@
+select * from aus_betting.nfl_stadiums

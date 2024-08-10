@@ -1,14 +1,13 @@
 import nfl_data_py as nfl
 import os
-import logging
-from general_utilities import setup_logging
-
-
-import nfl_data_py as nfl
+import chardet
+import subprocess
+import glob
 import pandas as pd
 import logging
-import os
 from general_utilities import setup_logging
+import duckdb
+from chardet.universaldetector import UniversalDetector
 
 
 def clean_column_names(df):
@@ -50,8 +49,10 @@ def fetch_and_save_weekly_rosters(file_path, start_year=2010, final_year=2024):
 
             # Reset index to remove duplicate indices
             if data.index.duplicated().any():
-                logging.error(f"Duplicate indices found for year {year}. Removing duplicates.")
-                data = data[~data.index.duplicated(keep='first')]
+                logging.error(
+                    f"Duplicate indices found for year {year}. Removing duplicates."
+                )
+                data = data[~data.index.duplicated(keep="first")]
 
             # Reset index if duplicates are still present
             if data.index.duplicated().any():
@@ -69,13 +70,19 @@ def fetch_and_save_weekly_rosters(file_path, start_year=2010, final_year=2024):
 
             # Check for and remove duplicate columns
             if final_data.columns.duplicated().any():
-                duplicate_columns = final_data.columns[final_data.columns.duplicated()].unique()
-                logging.error(f"Duplicate columns found in combined data: {duplicate_columns}")
+                duplicate_columns = final_data.columns[
+                    final_data.columns.duplicated()
+                ].unique()
+                logging.error(
+                    f"Duplicate columns found in combined data: {duplicate_columns}"
+                )
                 final_data = final_data.loc[:, ~final_data.columns.duplicated()]
                 logging.info("Duplicate columns removed from combined data.")
 
             # Save the combined data to CSV
-            save_data_to_csv(final_data, file_path, "weekly_rosters", start_year, final_year - 1)
+            save_data_to_csv(
+                final_data, file_path, "weekly_rosters", start_year, final_year - 1
+            )
             logging.info("Combined data saved to CSV successfully.")
 
     except ValueError as ve:
@@ -177,20 +184,128 @@ def fetch_and_save_data(folder_path, start_year=2010, final_year=2024):
     min_years = {"depth_charts": 2001, "injuries": 2009, "qbr": 2006, "ftn_data": 2022}
 
     fetch_and_save_weekly_rosters(folder_path, start_year, final_year)
-    # fetch_play_by_play_data(years, folder_path)
-    # fetch_seasonal_pfr_data(folder_path)
-    # fetch_weekly_pfr_data(folder_path)
+    fetch_play_by_play_data(years, folder_path)
+    fetch_seasonal_pfr_data(folder_path)
+    fetch_weekly_pfr_data(folder_path)
 
     for data_point, min_year in min_years.items():
         func = getattr(nfl, f"import_{data_point}", None)
         if func:
             adjusted_years = list(range(min_year + 1, final_year))
-            # fetch_yearly_data(func, data_point, adjusted_years, folder_path)
-
-    # fetch_ids_data(folder_path)
-    # fetch_team_descriptions(folder_path)
+            fetch_yearly_data(func, data_point, adjusted_years, folder_path)
 
 
+
+
+def detect_and_convert_encoding(file_path, max_sample_size=52428800):  # 50MB
+    """Detects and converts file encoding to UTF-8 if necessary."""
+
+    detector = UniversalDetector()
+    bytes_read = 0
+
+    # Open the file in binary mode and read chunks to detect encoding
+    with open(file_path, "rb") as file:
+        while True:
+            chunk = file.read(1048576)  # 1MB chunks
+            if not chunk or bytes_read >= max_sample_size:
+                break
+            detector.feed(chunk)
+            bytes_read += len(chunk)
+            if detector.done:
+                break
+        detector.close()
+
+    # Get detected encoding
+    encoding = detector.result["encoding"]
+
+    # If encoding is not UTF-8, convert the file
+    if encoding and encoding.lower() != "utf-8":
+        logging.info("Converting %s from %s to UTF-8", file_path, encoding)
+
+        temp_file_path = file_path + ".tmp"
+        try:
+            with open(temp_file_path, "wb") as output_file:
+                subprocess.run(
+                    ["iconv", "-f", encoding, "-t", "UTF-8", file_path],
+                    check=True,
+                    stdout=output_file,
+                )
+            os.replace(temp_file_path, file_path)
+            logging.info("Conversion successful for %s", file_path)
+        except subprocess.CalledProcessError as e:
+            logging.error("Conversion failed for %s: %s", file_path, e)
+            if os.path.exists(temp_file_path):
+                os.remove(temp_file_path)
+    else:
+        logging.info(
+            "No conversion needed for %s, detected encoding: %s", file_path, encoding
+        )
+
+
+def convert_and_upload_csvs_to_duckdb(
+    duckdb_file, schema_name, folder_path, max_sample_size=52428800
+):  # 50MB
+    """Detect, convert if necessary, and upload CSVs to DuckDB."""
+
+    conn = duckdb.connect(duckdb_file)
+
+    # Create schema if it doesn't exist
+    conn.execute(f"CREATE SCHEMA IF NOT EXISTS {schema_name};")
+
+    # Search for all CSV files in the folder and its subdirectories
+    csv_files = glob.glob(os.path.join(folder_path, "*.csv"), recursive=True)
+    logging.debug("CSV Files:\n%s", csv_files)
+
+    for csv_file in csv_files:
+        # Detect and convert encoding
+        detect_and_convert_encoding(csv_file, max_sample_size=max_sample_size)
+
+        # Extract table name from the CSV file path
+        table_name = os.path.splitext(os.path.basename(csv_file))[0]
+
+        # Create SQL statement to read CSV and create a table
+        sql = f"""
+        DROP TABLE IF EXISTS {schema_name}.{table_name};
+
+        CREATE TABLE {schema_name}.{table_name} AS
+        SELECT * FROM read_csv('{csv_file}');
+        """
+
+        # Execute SQL statement
+        try:
+            conn.execute(sql)
+            logging.info("Table %s created successfully in DuckDB.", table_name)
+        except Exception as e:
+            logging.error("Failed to create table %s in DuckDB: %s", table_name, e)
+
+    conn.close()
+
+import os
+import duckdb
+import sys
+
+def check_or_create_duckdb_file(duckdb_file_path):
+    """Checks if the DuckDB file exists and is accessible. 
+    If it doesn't exist, creates it. If it exists but is not accessible, stops the script."""
+    
+    if not os.path.isfile(duckdb_file_path):
+        try:
+            # Attempt to create the DuckDB file by opening a connection
+            conn = duckdb.connect(duckdb_file_path)
+            conn.close()
+            logging.info("DuckDB file created at %s", duckdb_file_path)
+        except Exception as e:
+            logging.error("Failed to create DuckDB file at %s: %s", duckdb_file_path, e)
+            sys.exit(1)  # Stop the script if creation fails
+    else:
+        try:
+            # Try to open the existing DuckDB file
+            conn = duckdb.connect(duckdb_file_path)
+            conn.close()
+            logging.info("DuckDB file %s is accessible.", duckdb_file_path)
+        except Exception as e:
+            logging.error("DuckDB file %s exists but cannot be opened: %s", duckdb_file_path, e)
+            sys.exit(1)  # Stop the script if the file cannot be opened
 def main():
     file_path = (
         "/Users/dougstrouth/Documents/Code/datasets/sports/NFL/raw_data/play_by_play"

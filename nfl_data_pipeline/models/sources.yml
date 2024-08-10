@@ -1,14 +1,36 @@
 version: 2
 
 sources:
-  - name: check_csv
-    description: "The primary loading place for all the csvs"
-    database: nfl_data
-    schema: check_csv
+  - name: play_by_play
+    description: ""
+    database: nfl
+    schema: play_by_play
     tables:
-      - name: nfl_asb
-        description: "Australian scores betting info"
+      - name: depth_charts
+        description: ""
+      - name: ftn_data
+        description: ""
+      - name: injuries
+        description: ""
+      - name: play_by_play
+        description: ""
+      - name: qbr
+        description: ""
+      - name: seasonal_pfr
+        description: ""
+      - name: weekly_pfr
+        description: ""
+      - name: weekly_rosters
+        description: ""
+
+  - name: aus_betting
+    description: ""
+    database: nfl
+    schema: aus_betting
+    tables:
+      - name: nfl_stadiums
+        description: ""
       - name: nfl_teams
-        description: "Team listing"
+        description: ""
       - name: spreadspoke_scores
-        description: "Scores of the various games and some associated odds"
+        description: ""

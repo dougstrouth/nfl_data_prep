@@ -3,3 +3,6 @@ Is there a db that has unique game ids already?
 
 
 I need the current rosters of all the teams so that I can see who contributes most to success
+
+Create a view call that takes a team and certain details to give filtered tables about that team
+What other common stats would I wanna be able to pull fast?

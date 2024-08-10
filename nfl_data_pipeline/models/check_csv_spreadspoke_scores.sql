@@ -1,1 +1,0 @@
-SELECT * from check_csv.spreadspoke_scores
