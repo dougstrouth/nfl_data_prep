@@ -32,7 +32,12 @@ def save_data_to_csv(data, folder_path, data_point, *args):
 
 
 def fetch_and_save_weekly_rosters(file_path, start_year=2010, final_year=2024):
-    """Fetch weekly rosters data year by year, align columns, and save to CSV."""
+    """
+    Fetch weekly rosters data year by year, align columns, and save to CSV.
+    Had to break it up because each df that came back when calling more than one year
+    wouldnt stack correctly in the way the library handles it
+    Probably a parquet having indices in them thing when going out for data
+    """
     years = list(range(start_year, final_year))
 
     combined_data = []
