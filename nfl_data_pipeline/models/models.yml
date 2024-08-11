@@ -32,4 +32,5 @@ models:
   - name: weekly_rosters_qbr  
   - name: pbp_stadiums
   - name: weekly_rosters
-  - name: pfr_player_info
+  - name: weekly_pfr_player_info
+  - name: seasonal_pfr_player_info
