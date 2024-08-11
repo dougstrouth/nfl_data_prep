@@ -31,3 +31,5 @@ models:
   - name: ftn_pbp
   - name: weekly_rosters_qbr  
   - name: pbp_stadiums
+  - name: weekly_rosters
+  - name: pfr_player_info
