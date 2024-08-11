@@ -1,0 +1,1 @@
+select * from play_by_play.play_by_play pbp join aus_betting.nfl_stadiums st on pbp.stadium =  st.stadium_name

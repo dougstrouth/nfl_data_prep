@@ -3,4 +3,4 @@
     materialized = 'table',
     )
 }}
-select * from aus_betting.nfl_stadiums
+select * from play_by_play.play_by_play

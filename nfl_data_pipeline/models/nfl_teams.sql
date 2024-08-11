@@ -3,4 +3,4 @@
     materialized = 'table',
     )
 }}
-select * from aus_betting.nfl_stadiums
+select * from aus_betting.nfl_teams

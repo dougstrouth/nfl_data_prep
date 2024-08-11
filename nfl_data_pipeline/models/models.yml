@@ -22,5 +22,12 @@ models:
         data_tests:
           - unique
           - not_null
+  - name: nfl_teams
+    columns: 
+    - name: team_name
+      data_tests:
+        - not_null
+        - unique
   - name: ftn_pbp
   - name: weekly_rosters_qbr  
+  - name: pbp_stadiums
