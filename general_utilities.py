@@ -7,6 +7,7 @@ from IPython import get_ipython
 import duckdb
 from ydata_profiling import ProfileReport
 
+
 def setup_logging(log_file=None):
     if log_file is None:
         if "ipykernel" in sys.modules:
@@ -37,6 +38,7 @@ def setup_logging(log_file=None):
         datefmt="%Y-%m-%d %H:%M:%S",
     )
 
+
 def clean_df_time_for_profiling(df: pd.DataFrame) -> pd.DataFrame:
     for col in df.columns:
         # Check if the column is of datetime dtype
@@ -45,30 +47,40 @@ def clean_df_time_for_profiling(df: pd.DataFrame) -> pd.DataFrame:
             df[col] = df[col].dt.strftime("%Y-%m-%d")
     return df
 
+
 def clean_df_convert_object_for_profiling(df: pd.DataFrame) -> pd.DataFrame:
     # Iterate over columns with dtype 'object'
-    for col in df.select_dtypes(include=['object']).columns:
+    for col in df.select_dtypes(include=["object"]).columns:
         # Convert each column to string
         df[col] = df[col].astype(str)
     return df
 
+
 def connect_to_duckdb(duckdb_file_path: str):
     conn = duckdb.connect(duckdb_file_path)
     return conn
+
 
 def sql_to_df(conn: duckdb.DuckDBPyConnection, sql: str) -> pd.DataFrame:
     df = conn.sql(sql).df()
     return df
 
 
-def profiling(df: pd.DataFrame, table_name: str, output_type="html", config_file_path="/Users/dougstrouth/Documents/config_minimal.yaml"):
+def profiling(
+    df: pd.DataFrame,
+    table_name: str,
+    output_type="html",
+    config_file_path="/Users/dougstrouth/Documents/config_minimal.yaml",
+):
     # Determine the directory of the script or notebook that triggered the function
     if "ipykernel" in sys.modules:
         try:
             ipython = get_ipython()
             if ipython is not None:
                 notebook_path = ipython.get_parent()["content"]["path"]
-                output_dir = os.path.join(os.path.dirname(notebook_path), "profiling_reports")
+                output_dir = os.path.join(
+                    os.path.dirname(notebook_path), "profiling_reports"
+                )
             else:
                 output_dir = os.path.join(os.getcwd(), "profiling_reports")
         except Exception:
@@ -80,10 +92,10 @@ def profiling(df: pd.DataFrame, table_name: str, output_type="html", config_file
 
     # Ensure the output directory exists
     os.makedirs(output_dir, exist_ok=True)
-    
+
     # Generate the profile report
     profile = ProfileReport(df, title=f"{table_name}", config_file=config_file_path)
-    
+
     if output_type == "html":
         html_path = os.path.join(output_dir, f"{table_name}.html")
         profile.to_file(html_path)
@@ -95,6 +107,8 @@ def profiling(df: pd.DataFrame, table_name: str, output_type="html", config_file
     else:
         logging.error("Please select either 'html' or 'json' as the output type")
         return "Error: Invalid output type specified"
+
+
 def get_schema_info(conn: duckdb.DuckDBPyConnection, schema: str) -> pd.DataFrame:
     """
     Retrieves information about tables and columns in a given schema from the information_schema.
@@ -118,7 +132,7 @@ def get_schema_info(conn: duckdb.DuckDBPyConnection, schema: str) -> pd.DataFram
     WHERE 
         table_schema = '{schema}'
     """
-    
+
     # Execute the query and return the result as a DataFrame
     df = conn.sql(query).df()
     return df
