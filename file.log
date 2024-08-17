@@ -1,0 +1,2 @@
+2024-08-16 19:40:36 - DEBUG - Starting new HTTPS connection (1): packages.ydata.ai:443
+2024-08-16 19:40:37 - DEBUG - https://packages.ydata.ai:443 "GET /ydata-profiling?version=v4.9.0&python_version=3.12&report_type=regular&dataframe=spark&datatype=tabular&os=Darwin&gpu=False HTTP/11" 200 None
