@@ -20,7 +20,7 @@ infer_dtypes: true
 show_variable_description: true
 
 # Number of workers (0=multiprocessing.cpu_count())
-pool_size: 2
+pool_size: 0
 
 # Show the progress bar
 progress_bar: true
@@ -74,7 +74,7 @@ vars:
     url:
         active: false
     timeseries:
-        active: true
+        active: false
         autocorrelation: 0.7
         lags: [1, 7, 12, 24, 30]
         significance: 0.05
@@ -85,9 +85,9 @@ sort: null
 
 # which diagrams to show
 missing_diagrams:
-    bar: true
-    matrix: true
-    heatmap: true
+    bar: false
+    matrix: false
+    heatmap: false
 
 correlations:
     pearson:
@@ -111,7 +111,7 @@ correlations:
       warn_high_correlations: true
       threshold: 0.9
     auto:
-       calculate: true
+       calculate: false
        warn_high_correlations: true
        threshold: 0.9
 

@@ -184,6 +184,7 @@ def fetch_and_save_data(folder_path, start_year=2010, final_year=2024):
     min_years = {"depth_charts": 2001, "injuries": 2009, "qbr": 2006, "ftn_data": 2022}
 
     fetch_and_save_weekly_rosters(folder_path, start_year, final_year)
+    print("weekly_roster saved to : ",folder_path)
     fetch_play_by_play_data(years, folder_path)
     fetch_seasonal_pfr_data(folder_path)
     fetch_weekly_pfr_data(folder_path)
