@@ -1,6 +1,6 @@
 {% macro create_metadata_table(schema_name, exclude_tables=[]) %}
     {%- set exclude_tables = exclude_tables + ['metadata_%'] -%}
-
+    {%- set exclude_tables = exclude_tables + ['create_%'] -%}
     WITH column_info AS (
         SELECT
             table_schema AS schema,

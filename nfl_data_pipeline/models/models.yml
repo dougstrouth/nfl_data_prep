@@ -36,6 +36,8 @@ models:
   - name: seasonal_pfr_player_info
   - name: create_metadata_table
     materialized: table
+  - name: depth_chart_injuries
+    materialized: table
 
   - name: create_distribution_table
     materialized: table

@@ -6,3 +6,6 @@ I need the current rosters of all the teams so that I can see who contributes mo
 
 Create a view call that takes a team and certain details to give filtered tables about that team
 What other common stats would I wanna be able to pull fast?
+
+
+need to create a unique id of season and week, and also season, week, game
