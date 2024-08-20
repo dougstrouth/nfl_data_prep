@@ -74,14 +74,14 @@ vars:
     url:
         active: false
     timeseries:
-        active: false
+        active: true
         autocorrelation: 0.7
         lags: [1, 7, 12, 24, 30]
         significance: 0.05
         pacf_acf_lag: 100
 
 # Sort the variables. Possible values: "ascending", "descending" or null (leaves original sorting)
-sort: null
+sort: "ascending"
 
 # which diagrams to show
 missing_diagrams:
@@ -91,28 +91,28 @@ missing_diagrams:
 
 correlations:
     pearson:
-      calculate: false
+      calculate: true
       warn_high_correlations: true
       threshold: 0.9
     spearman:
-      calculate: false
+      calculate: true
       warn_high_correlations: false
       threshold: 0.9
     kendall:
-      calculate: false
+      calculate: true
       warn_high_correlations: false
       threshold: 0.9
     phi_k:
-      calculate: false
+      calculate: true
       warn_high_correlations: false
       threshold: 0.9
     cramers:
-      calculate: false
+      calculate: true
       warn_high_correlations: true
       threshold: 0.9
     auto:
-       calculate: false
-       warn_high_correlations: true
+       calculate: true
+       warn_high_correlations: false
        threshold: 0.9
 
 
@@ -167,7 +167,7 @@ n_extreme_obs: 5
 n_freq_table_max: 10
 
 # Use `deep` flag for memory_usage
-memory_deep: false
+memory_deep: true
 
 # Configuration related to the duplicates
 duplicates:
@@ -193,7 +193,7 @@ notebook:
 
 html:
     # Minify the html
-    minify_html: true
+    minify_html: false
 
     # Offline support
     use_local_assets: true
