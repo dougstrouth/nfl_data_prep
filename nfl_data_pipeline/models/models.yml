@@ -1,21 +1,21 @@
 version: 2
 
 models:
-  - name: depth_charts
-    columns:
-      - name: season
-        data_tests:
-          - unique
-          - not_null
-      - name: club_code
-        data_tests:
-          - unique
-          - not_null
-      - name: week
-        data_tests:
-          - unique
-          - not_null
-   
+  #   - name: depth_charts
+  #     columns:
+  #       - name: season
+  #         data_tests:
+  #           - unique
+  #           - not_null
+  #       - name: club_code
+  #         data_tests:
+  #           - unique
+  #           - not_null
+  #       - name: week
+  #         data_tests:
+  #           - unique
+  #           - not_null
+
   - name: nfl_stadiums
     columns:
       - name: stadium_name
@@ -23,23 +23,18 @@ models:
           - unique
           - not_null
   - name: nfl_teams
-    columns: 
-    - name: team_name
-      data_tests:
-        - not_null
-        - unique
+    columns:
+      - name: team_name
+        data_tests:
+          - not_null
+          - unique
   - name: ftn_pbp
-  - name: weekly_rosters_qbr  
-  - name: pbp_stadiums
   - name: weekly_rosters
   - name: weekly_pfr_player_info
   - name: seasonal_pfr_player_info
-  - name: create_metadata_table
-    materialized: table
   - name: depth_chart_injuries
     materialized: table
 
-  - name: create_distribution_table
-    materialized: table
-  - name: metadata_test_consistency
-   
+  - name: column_info
+  - name: table_counts
+  - name: value_distributions

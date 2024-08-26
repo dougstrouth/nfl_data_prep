@@ -1,1 +1,0 @@
-{{create_metadata_table(schema_name ='main')}}
