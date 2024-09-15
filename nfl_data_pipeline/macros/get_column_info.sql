@@ -4,14 +4,11 @@
             table_schema,
             table_name,
             column_name,
-            CASE
-                WHEN data_type IN ('integer', 'bigint', 'smallint', 'tinyint', 'float', 'double') THEN 'number'
-                ELSE 'other'
-            END AS column_type
+            data_type
         FROM information_schema.columns
         WHERE table_schema = '{{ schema_name }}'
     )
-    SELECT
+    SELECT DISTINCT
         table_schema,
         table_name,
         column_name

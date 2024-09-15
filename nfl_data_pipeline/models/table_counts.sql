@@ -1,4 +1,4 @@
- -- depends_on: {{ ref('column_info') }}
+-- models/table_counts.sql
 {{ config(
     materialized='table',
     unique_key='table_name'

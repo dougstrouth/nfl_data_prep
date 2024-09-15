@@ -38,3 +38,4 @@ models:
   - name: column_info
   - name: table_counts
   - name: value_distributions
+  - name: get_table_names

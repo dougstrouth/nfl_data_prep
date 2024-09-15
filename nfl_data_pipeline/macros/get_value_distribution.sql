@@ -1,27 +1,29 @@
 {% macro get_value_distribution(schema_name) %}
     WITH column_info AS (
-        {{ get_column_info(schema_name) }}
+        {{ get_column_info(schema_name) }} -- Call the get_column_info macro
     ),
     value_distributions AS (
         {% set query_parts = [] %}
+        
         {% set columns_query = "SELECT table_schema, table_name, column_name FROM column_info" %}
-        {% set columns = run_query(columns_query) %}
+        {% set columns = run_query(columns_query).table %}
         
         {% for row in columns %}
-            {% set schema_name = row['table_schema'] %}
+            {% set table_schema = row['table_schema'] %}
             {% set table_name = row['table_name'] %}
             {% set column_name = row['column_name'] %}
+            
             {% set query_part = (
                 "SELECT "
-                + "'{{ schema_name }}' AS table_schema, "
-                + "'{{ table_name }}' AS table_name, "
-                + "'{{ column_name }}' AS column_name, "
-                + "value AS value, "
-                + "COUNT(*) AS column_count "
-                + "FROM {{ schema_name }}.{{ table_name }} "
-                + "CROSS JOIN UNNEST(ARRAY_AGG(DISTINCT {{ column_name }})) AS value "
-                + "GROUP BY value "
+                ~ "'" ~ table_schema ~ "' AS table_schema, "
+                ~ "'" ~ table_name ~ "' AS table_name, "
+                ~ "'" ~ column_name ~ "' AS column_name, "
+                ~ column_name ~ " AS value, "
+                ~ "COUNT(*) AS column_count "
+                ~ "FROM " ~ table_schema ~ "." ~ table_name ~ " "
+                ~ "GROUP BY " ~ column_name
             ) %}
+            
             {% do query_parts.append(query_part) %}
         {% endfor %}
         
@@ -42,7 +44,7 @@
             table_name,
             column_name,
             COUNT(*) AS total_count
-        FROM {{ ref('column_info') }}
+        FROM column_info
         GROUP BY table_schema, table_name, column_name
     ) AS tc
     ON vd.table_schema = tc.table_schema

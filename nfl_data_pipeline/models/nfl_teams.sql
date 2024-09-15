@@ -1,6 +1,6 @@
 {{
   config(
-    materialized = 'table',
+    materialized = 'table'
     )
 }}
 select * from aus_betting.nfl_teams
